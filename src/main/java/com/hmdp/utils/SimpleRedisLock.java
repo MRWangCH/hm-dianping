@@ -29,32 +29,34 @@ public class SimpleRedisLock implements ILock {
 
     @Override
     public boolean tryLock(long timeoutSec) {
-        // 获取线程标示
+        //获取线程标识
         String threadId = ID_PREFIX + Thread.currentThread().getId();
-        // 获取锁
-        Boolean success = stringRedisTemplate.opsForValue()
-                .setIfAbsent(KEY_PREFIX + name, threadId, timeoutSec, TimeUnit.SECONDS);
+        //获取锁
+        Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(KEY_PREFIX + name, threadId, timeoutSec, TimeUnit.SECONDS);
         return Boolean.TRUE.equals(success);
     }
 
-    @Override
+     @Override
     public void unlock() {
-        // 调用lua脚本
-        stringRedisTemplate.execute(
-                UNLOCK_SCRIPT,
-                Collections.singletonList(KEY_PREFIX + name),
-                ID_PREFIX + Thread.currentThread().getId());
+        //调用Lua脚本
+         stringRedisTemplate.execute(UNLOCK_SCRIPT,
+                 Collections.singletonList(KEY_PREFIX + name),
+                 ID_PREFIX + Thread.currentThread().getId()
+                 );
     }
-    /*@Override
+
+   /* @Override
     public void unlock() {
-        // 获取线程标示
+        //获取线程标识
         String threadId = ID_PREFIX + Thread.currentThread().getId();
-        // 获取锁中的标示
+        //获取锁中得标识
         String id = stringRedisTemplate.opsForValue().get(KEY_PREFIX + name);
-        // 判断标示是否一致
-        if(threadId.equals(id)) {
-            // 释放锁
+        //判断标识是否一致
+        if (threadId.equals(id)) {
+            //释放锁
             stringRedisTemplate.delete(KEY_PREFIX + name);
         }
     }*/
+
+
 }
